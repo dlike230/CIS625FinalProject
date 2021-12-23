@@ -80,5 +80,5 @@ def estimate_vc_shattering(draw_random_example, can_induce, num_trials=2000):
 
 
 def estimate_vc_sauer(draw_random_example, can_induce, num_trials=2000):
-    consistent_vc = lambda draw, check, vc: verify_saeur(draw, check, vc, num_trials) and estimate_can_shatter(draw, check, vc, num_trials)
+    consistent_vc = lambda draw, check, vc: verify_saeur(draw, check, vc, num_trials)
     return estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc)
