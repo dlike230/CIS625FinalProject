@@ -8,6 +8,15 @@ def random_labeled_sample(draw_random_example, sample_size):
 
 
 def estimate_can_shatter(draw_random_example, can_induce, sample_size, num_trials):
+    """
+    Estimates whether a concept class can shatter some sample of a certain size
+    :param draw_random_example: A function that returns a random example from any arbitrary distribution
+    :param can_induce: A function that takes in a labeled sample and returns whether the concept class of interest
+                       can produce that labeling on that sample.
+    :param sample_size: The sample size to test
+    :param num_trials: How many randomized trials to run
+    :return:
+    """
     for _ in range(num_trials):
         labeled_sample = random_labeled_sample(draw_random_example, sample_size)
         if not can_induce(labeled_sample):
@@ -20,15 +29,20 @@ def log_phi(d, m):
 
 
 def verify_saeur(draw_random_example, can_induce, vcd, num_trials):
+    """
+    Checks whether phi(d, m) is too small for the given vc dimension
+    :param draw_random_example:
+    :param can_induce:
+    :param vcd:
+    :param num_trials:
+    :return:
+    """
     total_labelings_induced = 0
     sample_size = vcd * 2
     for _ in range(num_trials):
         labeled_sample = random_labeled_sample(draw_random_example, sample_size)
         if can_induce(labeled_sample):
             total_labelings_induced += 1
-
-    # print(log_phi(vcd, sample_size) - sample_size, vcd, sample_size)
-    # expected_labelings_induced = num_trials * (2 ** (log_phi(vcd, sample_size) - sample_size))
 
     if total_labelings_induced == 0:
         return False
