@@ -1,5 +1,6 @@
 import math
 import random
+from math import comb
 
 
 def random_labeled_sample(draw_random_example, sample_size):
@@ -15,7 +16,7 @@ def estimate_can_shatter(draw_random_example, can_induce, sample_size, num_trial
 
 
 def log_phi(d, m):
-    return d * math.log2(math.e * m / d)
+    return math.log2(sum(comb(m, i) for i in range(d + 1)))
 
 
 def verify_saeur(draw_random_example, can_induce, vcd, num_trials):
@@ -30,11 +31,11 @@ def verify_saeur(draw_random_example, can_induce, vcd, num_trials):
     # expected_labelings_induced = num_trials * (2 ** (log_phi(vcd, sample_size) - sample_size))
 
     if total_labelings_induced == 0:
-        return True
+        return False
 
     log_est_labels_induced = math.log2(total_labelings_induced / num_trials) + sample_size
 
-    return log_est_labels_induced < log_phi(vcd, sample_size)
+    return log_est_labels_induced > log_phi(vcd, sample_size)
 
 
 def estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc):
