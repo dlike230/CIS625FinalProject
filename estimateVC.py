@@ -24,17 +24,18 @@ def estimate_can_shatter(draw_random_example, can_induce, sample_size, num_trial
     return True
 
 
-def log_phi(d, m):
-    return math.log2(sum(comb(m, i) for i in range(d + 1)))
+def phi(d, m):
+    return sum(comb(m, i) for i in range(d + 1))
 
 
 def verify_saeur(draw_random_example, can_induce, vcd, num_trials):
     """
-    Checks whether phi(d, m) is too small for the given vc dimension
-    :param draw_random_example:
-    :param can_induce:
-    :param vcd:
-    :param num_trials:
+    Checks whether phi(d, m) is too small for the given vc dimension. If it is, return that the proposed
+    vcd is inconsistent with Sauer's lemma.
+    :param draw_random_example: Function for returning a random example
+    :param can_induce: Function that takes in a labeled sample and returns whether that labeling can be induced
+    :param vcd: The proposed vc-dimension
+    :param num_trials: The number of trials to use for estimation
     :return:
     """
     total_labelings_induced = 0
@@ -47,12 +48,20 @@ def verify_saeur(draw_random_example, can_induce, vcd, num_trials):
     if total_labelings_induced == 0:
         return False
 
-    log_est_labels_induced = math.log2(total_labelings_induced / num_trials) + sample_size
+    est_labels_induced = (total_labelings_induced / num_trials) * (2 ** sample_size)
 
-    return log_est_labels_induced > log_phi(vcd, sample_size)
+    return est_labels_induced > phi(vcd, sample_size)
 
 
 def estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc):
+    """
+    A meta-algorithm for estimating the VC dimension
+    :param draw_random_example: Draw a random example from the distribution
+    :param can_induce: Function that takes in a labeled sample and returns whether that labeling can be induced
+    :param consistent_vc: A function that uses some metric to determine whether a given vc dimension is consistent
+                          with empirical data.
+    :return: An estimate of the VC dimension
+    """
     # estimate a lower and upper bound on the VC dimension before performing a binary search for the VC dimension
     lower_bound = 1
     upper_bound = 1
@@ -75,10 +84,25 @@ def estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc):
 
 
 def estimate_vc_shattering(draw_random_example, can_induce, num_trials=2000):
+    """
+    Estimates the VC dimension based on an estimate of how many examples can be shattered
+    :param draw_random_example:
+    :param can_induce:
+    :param num_trials:
+    :return:
+    """
     consistent_vc = lambda draw, check, sample_size: estimate_can_shatter(draw, check, sample_size, num_trials)
     return estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc)
 
 
 def estimate_vc_sauer(draw_random_example, can_induce, num_trials=2000):
+    """
+    Estimates the VC dimension based on how closely the estimated number of labellings that can be induced matches
+    Sauer's lemma
+    :param draw_random_example:
+    :param can_induce:
+    :param num_trials:
+    :return:
+    """
     consistent_vc = lambda draw, check, vc: verify_saeur(draw, check, vc, num_trials)
     return estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc)
