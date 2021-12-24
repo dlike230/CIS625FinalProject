@@ -1,3 +1,7 @@
+import numpy as np
+from sklearn import metrics
+from sklearn import svm
+
 def union_of_intervals(s, k):
     sorted_list = sorted(s)
     num_intervals = 0
@@ -7,6 +11,40 @@ def union_of_intervals(s, k):
             num_intervals += 1
         last_labeling = label
         if num_intervals > k:
+            return False
+    return True
+
+
+
+def separating_hyperplanes(X, y):
+    clf = svm.SVC(kernel='linear')
+    clf.fit(X, y)
+    y_pred = clf.predict(X)
+    return (metrics.accuracy_score(y_pred, y) == 1)
+
+
+def rectangles(X, y):
+    positives = []
+    negatives = []
+    for (xi, yi) in zip(X, y):
+        if yi == 1:
+            positives.append(xi)
+        else:
+            negatives.append(xi)
+    positives = np.array(positives)
+    negatives = np.array(negatives)
+    lower_boundary = np.amin(positives)
+    upper_boundary = np.amax(positives)
+    for ni in negatives:
+        if np.all(ni > lower_boundary) and np.all(ni < upper_boundary):
+            return False
+    return True
+
+def polynomial_classifier(X, y, degree):
+    z = np.polyfit(X, y, degree)
+    p = np.poly1d(z)
+    for (xi, yi) in zip(X, y):
+        if p(xi) != yi:
             return False
     return True
 
