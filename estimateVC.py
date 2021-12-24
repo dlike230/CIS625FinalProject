@@ -50,7 +50,7 @@ def verify_saeur(draw_random_example, can_induce, vcd, num_trials):
 
     est_labels_induced = (total_labelings_induced / num_trials) * (2 ** sample_size)
 
-    return est_labels_induced > phi(vcd, sample_size)
+    return est_labels_induced >= phi(vcd, sample_size)
 
 
 def estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc):

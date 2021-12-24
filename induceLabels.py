@@ -2,6 +2,7 @@ import numpy as np
 from sklearn import metrics
 from sklearn import svm
 
+
 def union_of_intervals(s, k):
     sorted_list = sorted(s)
     num_intervals = 0
@@ -15,8 +16,11 @@ def union_of_intervals(s, k):
     return True
 
 
-
-def separating_hyperplanes(X, y):
+def separating_hyperplanes(labeled_samples):
+    X = [x for x, _ in labeled_samples]
+    y = [y for _, y in labeled_samples]
+    if sum(y) == 0 or sum(y) == len(labeled_samples):
+        return True
     clf = svm.SVC(kernel='linear')
     clf.fit(X, y)
     y_pred = clf.predict(X)
@@ -39,6 +43,7 @@ def rectangles(X, y):
         if np.all(ni > lower_boundary) and np.all(ni < upper_boundary):
             return False
     return True
+
 
 def polynomial_classifier(X, y, degree):
     z = np.polyfit(X, y, degree)
