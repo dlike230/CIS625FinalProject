@@ -27,7 +27,11 @@ def separating_hyperplanes(labeled_samples):
     return (metrics.accuracy_score(y_pred, y) == 1)
 
 
-def rectangles(X, y):
+def rectangles(labeled_samples):
+    X = [x for x, _ in labeled_samples]
+    y = [y for _, y in labeled_samples]
+    if len(X) == 0 or sum(y) == 0 or sum(y) == len(labeled_samples):
+        return True
     positives = []
     negatives = []
     for (xi, yi) in zip(X, y):
