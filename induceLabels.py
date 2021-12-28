@@ -41,11 +41,20 @@ def rectangles(labeled_samples):
             negatives.append(xi)
     positives = np.array(positives)
     negatives = np.array(negatives)
-    lower_boundary = np.amin(positives)
-    upper_boundary = np.amax(positives)
+
+    left = min(positives, key=lambda x: x[0])[0]
+    right = max(positives, key=lambda x: x[0])[0]
+    top = max(positives, key=lambda x: x[1])[1]
+    bottom = min(positives, key=lambda x: x[1])[1]
+
+    # lower_boundary = np.amin(positives)
+    # upper_boundary = np.amax(positives)
     for ni in negatives:
-        if np.all(ni > lower_boundary) and np.all(ni < upper_boundary):
+        x, y = ni[0], ni[1]
+        if left <= x <= right and bottom <= y <= top:
             return False
+        # if np.all(ni > lower_boundary) and np.all(ni < upper_boundary):
+        #     return False
     return True
 
 
