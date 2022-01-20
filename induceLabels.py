@@ -58,13 +58,15 @@ def rectangles(labeled_samples):
     return True
 
 
-def polynomial_classifier(X, y, degree):
-    z = np.polyfit(X, y, degree)
-    p = np.poly1d(z)
-    for (xi, yi) in zip(X, y):
-        if p(xi) != yi:
-            return False
-    return True
+def polynomial_classifier(labeled_samples, degree):
+    X = [x for x, _ in labeled_samples]
+    y = [y for _, y in labeled_samples]
+    if sum(y) == 0 or sum(y) == len(labeled_samples):
+        return True
+    clf = svm.SVC(kernel='poly', degree=degree)
+    clf.fit(X, y)
+    y_pred = clf.predict(X)
+    return (metrics.accuracy_score(y_pred, y) == 1)
 
 
 if __name__ == "__main__":
