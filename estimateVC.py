@@ -6,6 +6,20 @@ from math import comb
 def random_labeled_sample(draw_random_example, sample_size):
     return [(draw_random_example(), random.randint(0, 1)) for _ in range(sample_size)]
 
+def estimate_can_shatter_v2(draw_random_example, can_induce, sample_size, num_trials, num_labelings=250):
+    for _ in range(num_trials):
+        unlabeled_sample = random_unlabeled_sample(draw_random_example, sample_size)
+        success = False
+        for _ in range(num_labelings):
+            labeled_sample = [(x, random.randint(0, 1)) for x in unlabeled_sample]
+            if not can_induce(labeled_sample):
+                success = False
+                break
+            success = True
+        if success:
+            return True
+    return False
+
 
 def estimate_can_shatter(draw_random_example, can_induce, sample_size, num_trials):
     """
@@ -83,7 +97,7 @@ def estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc):
     return upper_bound
 
 
-def estimate_vc_shattering(draw_random_example, can_induce, num_trials=2000):
+def estimate_vc_shattering(draw_random_example, can_induce, num_trials=500):
     """
     Estimates the VC dimension based on an estimate of how many examples can be shattered
     :param draw_random_example:
@@ -91,7 +105,7 @@ def estimate_vc_shattering(draw_random_example, can_induce, num_trials=2000):
     :param num_trials:
     :return:
     """
-    consistent_vc = lambda draw, check, sample_size: estimate_can_shatter(draw, check, sample_size, num_trials)
+    consistent_vc = lambda draw, check, sample_size: estimate_can_shatter_v2(draw, check, sample_size, num_trials)
     return estimate_vc_bin_search(draw_random_example, can_induce, consistent_vc)
 
 
